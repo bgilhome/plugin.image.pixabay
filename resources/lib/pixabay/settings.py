@@ -1,4 +1,4 @@
-API_HOST    = 'api.500px.com'
+API_HOST    = 'api.pixabay.com'
 API_VERSION = '/v1'
 OAUTH_ROOT  = '/oauth/'
 RETRY_COUNT = 1

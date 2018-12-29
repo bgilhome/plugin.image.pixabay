@@ -12,20 +12,20 @@ __cwd__        = __addon__.getAddonInfo('path').decode("utf-8")
 __resource__   = xbmc.translatePath( os.path.join( __cwd__, 'resources', 'lib' ).encode("utf-8") ).decode("utf-8")
 sys.path.append(__resource__)
 
-import fivehundredpxutils
-import fivehundredpxutils.xbmc
-from fivehundredpx.client import FiveHundredPXAPI
+import pixabayutils
+import pixabayutils.xbmc
+from pixabay.client import pixabayAPI
 
 _CONSUMER_KEY = 'LvUFQHMQgSlaWe3aRQot6Ct5ZC2pdTMyTLS0GMfF'
-_RPP = int(xbmcplugin.getSetting(fivehundredpxutils.xbmc.addon_handle, 'rpp'))
-_LIMITP = str(xbmcplugin.getSetting(fivehundredpxutils.xbmc.addon_handle, 'limitpages'))
-_MAXP = int(xbmcplugin.getSetting(fivehundredpxutils.xbmc.addon_handle, 'maxpages'))
-_IMGSIZE = int(xbmcplugin.getSetting(fivehundredpxutils.xbmc.addon_handle, 'imgsize'))
-_TMBSIZE = int(xbmcplugin.getSetting(fivehundredpxutils.xbmc.addon_handle, 'tmbsize'))
-_USERNAME = str(xbmcplugin.getSetting(fivehundredpxutils.xbmc.addon_handle, 'username'))
-_TMBFOLDERS = str(xbmcplugin.getSetting(fivehundredpxutils.xbmc.addon_handle, 'tmbfolders'))
+_RPP = int(xbmcplugin.getSetting(pixabayutils.xbmc.addon_handle, 'rpp'))
+_LIMITP = str(xbmcplugin.getSetting(pixabayutils.xbmc.addon_handle, 'limitpages'))
+_MAXP = int(xbmcplugin.getSetting(pixabayutils.xbmc.addon_handle, 'maxpages'))
+_IMGSIZE = int(xbmcplugin.getSetting(pixabayutils.xbmc.addon_handle, 'imgsize'))
+_TMBSIZE = int(xbmcplugin.getSetting(pixabayutils.xbmc.addon_handle, 'tmbsize'))
+_USERNAME = str(xbmcplugin.getSetting(pixabayutils.xbmc.addon_handle, 'username'))
+_TMBFOLDERS = str(xbmcplugin.getSetting(pixabayutils.xbmc.addon_handle, 'tmbfolders'))
 
-API = FiveHundredPXAPI()
+API = pixabayAPI()
 
 
 class Image(object):
@@ -84,7 +84,7 @@ class User(object):
 
 def feature():
     """ Lists photos for the chosen feature, category and user_id """
-    params = fivehundredpxutils.xbmc.addon_params
+    params = pixabayutils.xbmc.addon_params
     feature = params['feature']
     category = params.get('category', None)
     page = int(params.get('page', 1))
@@ -96,28 +96,28 @@ def feature():
         xbmc.executebuiltin('Notification(%s, %s,,%s)' % (__addonname__, 'Error from API: '+str(e.status),__icon__))
         xbmc.log(__addonname__+' - Error from API: '+str(e), xbmc.LOGERROR)
         return
-    fivehundredpxutils.xbmc.xbmcplugin.setContent(fivehundredpxutils.xbmc.addon_handle, 'images')
+    pixabayutils.xbmc.xbmcplugin.setContent(pixabayutils.xbmc.addon_handle, 'images')
     for image in map(Image, resp['photos']):
-        fivehundredpxutils.xbmc.add_image(image)
+        pixabayutils.xbmc.add_image(image)
 
     if not (_LIMITP == 'true' and (resp['current_page'] >= _MAXP)):
         if resp['current_page'] < resp['total_pages']:
             next_page = page + 1
-            url = fivehundredpxutils.xbmc.encode_child_url('feature', feature=feature, category=category, user_id=user_id, page=next_page)
-            fivehundredpxutils.xbmc.add_dir('Next page', url)
+            url = pixabayutils.xbmc.encode_child_url('feature', feature=feature, category=category, user_id=user_id, page=next_page)
+            pixabayutils.xbmc.add_dir('Next page', url)
 
-    fivehundredpxutils.xbmc.end_of_directory()
+    pixabayutils.xbmc.end_of_directory()
 
 
 def search():
     """ Shows a search box and lists resulting photos """
     def getTerm():
-        kb = xbmc.Keyboard(heading='Search 500px')
+        kb = xbmc.Keyboard(heading='Search pixabay')
         kb.doModal()
         text = kb.getText()
         return text if kb.isConfirmed() and text else None
 
-    params = fivehundredpxutils.xbmc.addon_params
+    params = pixabayutils.xbmc.addon_params
 
     if 'term' not in params:
         term = getTerm()
@@ -138,20 +138,20 @@ def search():
     if (resp['total_items'] == 0):
         xbmc.executebuiltin('Notification(%s, %s,,%s)' % (__addonname__, "Your search returned no matches.",__icon__))
         return
-    fivehundredpxutils.xbmc.xbmcplugin.setContent(fivehundredpxutils.xbmc.addon_handle, 'images')
+    pixabayutils.xbmc.xbmcplugin.setContent(pixabayutils.xbmc.addon_handle, 'images')
     for image in map(Image, resp['photos']):
-        fivehundredpxutils.xbmc.add_image(image)
+        pixabayutils.xbmc.add_image(image)
 
     if not (_LIMITP == 'true' and (resp['current_page'] >= _MAXP)):
         if resp['current_page'] < resp['total_pages']:
             next_page = page + 1
             if 'ctxsearch' in params:
-                url = fivehundredpxutils.xbmc.encode_child_url('search', term=term, page=next_page, ctxsearch=True)
+                url = pixabayutils.xbmc.encode_child_url('search', term=term, page=next_page, ctxsearch=True)
             else:
-                url = fivehundredpxutils.xbmc.encode_child_url('search', term=term, page=next_page)
-            fivehundredpxutils.xbmc.add_dir('Next page', url)
+                url = pixabayutils.xbmc.encode_child_url('search', term=term, page=next_page)
+            pixabayutils.xbmc.add_dir('Next page', url)
 
-    fivehundredpxutils.xbmc.end_of_directory()
+    pixabayutils.xbmc.end_of_directory()
 
 
 def features():
@@ -167,22 +167,22 @@ def features():
     )
 
     for feature in features:
-        url = fivehundredpxutils.xbmc.encode_child_url('categories', feature=feature)
-        fivehundredpxutils.xbmc.add_dir(feature, url)
+        url = pixabayutils.xbmc.encode_child_url('categories', feature=feature)
+        pixabayutils.xbmc.add_dir(feature, url)
 
     if _USERNAME != "":
         user = User(username=_USERNAME)
         if user.id:
-            url = fivehundredpxutils.xbmc.encode_child_url('user_features', user_id=user.id)
-            fivehundredpxutils.xbmc.add_dir(user.fullname, url, user.picture)
+            url = pixabayutils.xbmc.encode_child_url('user_features', user_id=user.id)
+            pixabayutils.xbmc.add_dir(user.fullname, url, user.picture)
 
-            url = fivehundredpxutils.xbmc.encode_child_url('friends', user_id=user.id)
-            fivehundredpxutils.xbmc.add_dir(user.fullname+'\'s friends', url)
+            url = pixabayutils.xbmc.encode_child_url('friends', user_id=user.id)
+            pixabayutils.xbmc.add_dir(user.fullname+'\'s friends', url)
 
-    url = fivehundredpxutils.xbmc.encode_child_url('search')
-    fivehundredpxutils.xbmc.add_dir('Search', url)
+    url = pixabayutils.xbmc.encode_child_url('search')
+    pixabayutils.xbmc.add_dir('Search', url)
 
-    fivehundredpxutils.xbmc.end_of_directory()
+    pixabayutils.xbmc.end_of_directory()
 
 
 def categories():
@@ -218,43 +218,43 @@ def categories():
         'Wedding': 25,
     }
 
-    params = fivehundredpxutils.xbmc.addon_params
+    params = pixabayutils.xbmc.addon_params
     feature = params['feature']
     user_id = params.get('user_id', None)
 
-    url = fivehundredpxutils.xbmc.encode_child_url('feature', feature=feature, user_id=user_id)
-    fivehundredpxutils.xbmc.add_dir('All', url)
+    url = pixabayutils.xbmc.encode_child_url('feature', feature=feature, user_id=user_id)
+    pixabayutils.xbmc.add_dir('All', url)
 
     for category in sorted(categories):
-        url = fivehundredpxutils.xbmc.encode_child_url('feature', feature=feature, category=category, user_id=user_id)
-        fivehundredpxutils.xbmc.add_dir(category, url)
+        url = pixabayutils.xbmc.encode_child_url('feature', feature=feature, category=category, user_id=user_id)
+        pixabayutils.xbmc.add_dir(category, url)
 
-    fivehundredpxutils.xbmc.end_of_directory()
+    pixabayutils.xbmc.end_of_directory()
 
 
 def user_features():
     """ Lists features for a single user identified by user_id """
-    params = fivehundredpxutils.xbmc.addon_params
+    params = pixabayutils.xbmc.addon_params
     user_id = params.get('user_id', None)
 
     if user_id:
         user = User(user_id)
 
-        url = fivehundredpxutils.xbmc.encode_child_url('feature', feature='user', user_id=user.id)
-        fivehundredpxutils.xbmc.add_dir(user.fullname+'\'s photos', url, user.picture)
+        url = pixabayutils.xbmc.encode_child_url('feature', feature='user', user_id=user.id)
+        pixabayutils.xbmc.add_dir(user.fullname+'\'s photos', url, user.picture)
 
-        url = fivehundredpxutils.xbmc.encode_child_url('list_galleries', user_id=user.id)
-        fivehundredpxutils.xbmc.add_dir(user.fullname+'\'s galleries', url, user.picture)
+        url = pixabayutils.xbmc.encode_child_url('list_galleries', user_id=user.id)
+        pixabayutils.xbmc.add_dir(user.fullname+'\'s galleries', url, user.picture)
 
-        url = fivehundredpxutils.xbmc.encode_child_url('categories', feature='user_friends', user_id=user.id)
-        fivehundredpxutils.xbmc.add_dir(user.fullname+'\'s friends\' photos', url, user.picture)
+        url = pixabayutils.xbmc.encode_child_url('categories', feature='user_friends', user_id=user.id)
+        pixabayutils.xbmc.add_dir(user.fullname+'\'s friends\' photos', url, user.picture)
 
-    fivehundredpxutils.xbmc.end_of_directory()
+    pixabayutils.xbmc.end_of_directory()
 
 
 def list_galleries():
     """ List public galleries for a user identified by user_id """
-    params = fivehundredpxutils.xbmc.addon_params
+    params = pixabayutils.xbmc.addon_params
     page = int(params.get('page', 1))
     user_id = params.get('user_id', None)
 
@@ -270,24 +270,24 @@ def list_galleries():
         return
 
     for gallery in resp['galleries']:
-        url = fivehundredpxutils.xbmc.encode_child_url('gallery', gallery_id=gallery['id'], user_id=gallery['user_id'])
+        url = pixabayutils.xbmc.encode_child_url('gallery', gallery_id=gallery['id'], user_id=gallery['user_id'])
         cover_photo = None
         if (_TMBFOLDERS == 'true' and gallery['cover_photo']):
             cover_photo = gallery['cover_photo'][0]['url']
-        fivehundredpxutils.xbmc.add_dir(gallery['name'], url, cover_photo)
+        pixabayutils.xbmc.add_dir(gallery['name'], url, cover_photo)
 
     if not (_LIMITP == 'true' and (resp['current_page'] >= _MAXP)):
        if resp['current_page'] < resp['total_pages']:
            next_page = page + 1
-           url = fivehundredpxutils.xbmc.encode_child_url('list_galleries', user_id=user_id, page=next_page)
-           fivehundredpxutils.xbmc.add_dir('Next page', url)
+           url = pixabayutils.xbmc.encode_child_url('list_galleries', user_id=user_id, page=next_page)
+           pixabayutils.xbmc.add_dir('Next page', url)
 
-    fivehundredpxutils.xbmc.end_of_directory()
+    pixabayutils.xbmc.end_of_directory()
 
 
 def gallery():
     """ Lists photos in a gallery identified by user_id and gallery_id """
-    params = fivehundredpxutils.xbmc.addon_params
+    params = pixabayutils.xbmc.addon_params
     user_id = params['user_id']
     gallery_id = params['gallery_id']
     page = int(params.get('page', 1))
@@ -298,22 +298,22 @@ def gallery():
         xbmc.executebuiltin('Notification(%s, %s,,%s)' % (__addonname__, 'Error from API: '+str(e.status),__icon__))
         xbmc.log(__addonname__+' - Error from API: '+str(e), xbmc.LOGERROR)
         return
-    fivehundredpxutils.xbmc.xbmcplugin.setContent(fivehundredpxutils.xbmc.addon_handle, 'images')
+    pixabayutils.xbmc.xbmcplugin.setContent(pixabayutils.xbmc.addon_handle, 'images')
     for image in map(Image, resp['photos']):
-        fivehundredpxutils.xbmc.add_image(image)
+        pixabayutils.xbmc.add_image(image)
 
     if not (_LIMITP == 'true' and (resp['current_page'] >= _MAXP)):
         if resp['current_page'] < resp['total_pages']:
             next_page = page + 1
-            url = fivehundredpxutils.xbmc.encode_child_url('gallery', gallery_id=gallery_id, user_id=user_id, page=next_page)
-            fivehundredpxutils.xbmc.add_dir('Next page', url)
+            url = pixabayutils.xbmc.encode_child_url('gallery', gallery_id=gallery_id, user_id=user_id, page=next_page)
+            pixabayutils.xbmc.add_dir('Next page', url)
 
-    fivehundredpxutils.xbmc.end_of_directory()
+    pixabayutils.xbmc.end_of_directory()
 
 
 def friends():
     """ Lists friends of a user identified by user_id """
-    params = fivehundredpxutils.xbmc.addon_params
+    params = pixabayutils.xbmc.addon_params
     page = int(params.get('page', 1))
     user_id = params.get('user_id', None)
 
@@ -330,19 +330,19 @@ def friends():
 
     for friend in resp['friends']:
         #xbmc.log(__addonname__+' - friend info '+str(friend), 0)
-        url = fivehundredpxutils.xbmc.encode_child_url('user_features', user_id=friend['id'])
+        url = pixabayutils.xbmc.encode_child_url('user_features', user_id=friend['id'])
         userpicture = None
         if _TMBFOLDERS == 'true':
             userpicture = friend['userpic_url']
-        fivehundredpxutils.xbmc.add_dir(friend['fullname'], url, userpicture)
+        pixabayutils.xbmc.add_dir(friend['fullname'], url, userpicture)
 
     if not (_LIMITP == 'true' and (resp['page'] >= _MAXP)):
        if resp['page'] < resp['friends_pages']:
            next_page = page + 1
-           url = fivehundredpxutils.xbmc.encode_child_url('friends', user_id=user_id, page=next_page)
-           fivehundredpxutils.xbmc.add_dir('Next page', url)
+           url = pixabayutils.xbmc.encode_child_url('friends', user_id=user_id, page=next_page)
+           pixabayutils.xbmc.add_dir('Next page', url)
 
-    fivehundredpxutils.xbmc.end_of_directory()
+    pixabayutils.xbmc.end_of_directory()
 
 
 
@@ -358,7 +358,7 @@ try:
         'friends': friends,
     }
 
-    params = fivehundredpxutils.xbmc.addon_params
+    params = pixabayutils.xbmc.addon_params
     mode_name = params['mode']
     modes[mode_name]()
 except KeyError:

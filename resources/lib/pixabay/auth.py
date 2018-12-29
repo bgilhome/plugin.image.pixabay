@@ -1,8 +1,8 @@
 from urllib2 import Request, urlopen
 
-from fivehundredpx import oauth
-from fivehundredpx.settings import *
-from fivehundredpx.errors 	import *
+from pixabay import oauth
+from pixabay.settings import *
+from pixabay.errors 	import *
 
 class OAuthHandler(object):
 	

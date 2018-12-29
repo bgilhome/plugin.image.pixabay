@@ -1,5 +1,5 @@
-from fivehundredpx.utils   import Util
-from fivehundredpx.errors  import *
+from pixabay.utils   import Util
+from pixabay.errors  import *
 import urllib, re, httplib, time, simplejson
 
 re_path_template = re.compile('{\w+}')
@@ -106,7 +106,7 @@ def bind_api(**config):
                 try:
                     error_msg = self.api.parser.parse_error(response.read())
                 except Exception:
-                    error_msg = "500PX error response: status code = %s" % response.status
+                    error_msg = "pixabay error response: status code = %s" % response.status
                 finally:
                     conn.close()
                 raise FiveHundredClientError(error_msg,status=response.status)

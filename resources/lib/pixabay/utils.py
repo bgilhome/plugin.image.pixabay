@@ -1,5 +1,5 @@
-from fivehundredpx.settings import *
-from fivehundredpx.errors   import *
+from pixabay.settings import *
+from pixabay.errors   import *
 import os, mimetypes
 import urllib
 

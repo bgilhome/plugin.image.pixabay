@@ -1,9 +1,9 @@
-from fivehundredpx       import settings
-from fivehundredpx.auth  import *
-from fivehundredpx.bind  import bind_api
-from fivehundredpx.utils import FileUtil
+from pixabay       import settings
+from pixabay.auth  import *
+from pixabay.bind  import bind_api
+from pixabay.utils import FileUtil
 
-class FiveHundredPXAPI(object):
+class pixabayAPI(object):
 
     def __init__(self,auth_handler=None,host=None,secure=True,version=None,retry_count=None,retry_delay=None,retry_errors=None):
         self.format		  = 'json'
@@ -16,7 +16,7 @@ class FiveHundredPXAPI(object):
         self.retry_errors = retry_errors
 
     #### Photo API
-    # https://github.com/500px/api-documentation/tree/master/endpoints/photo
+    # https://github.com/pixabay/api-documentation/tree/master/endpoints/photo
     photos 		           = bind_api(path='/photos')
     photos_search          = bind_api(path='/photos/search')
     photos_id 	           = bind_api(path='/photos/{id}', allowed_params=['id'])
@@ -42,7 +42,7 @@ class FiveHundredPXAPI(object):
         )(self,http_body=body, headers=headers)
 
     #### User API
-    # https://github.com/500px/api-documentation/tree/master/endpoints/user
+    # https://github.com/pixabay/api-documentation/tree/master/endpoints/user
     users                = bind_api(path='/users', require_auth=True)
     users_show           = bind_api(path='/users/show')
     users_search         = bind_api(path='/users/search')
@@ -52,7 +52,7 @@ class FiveHundredPXAPI(object):
     users_friends_delete = bind_api(path='/users/{id}/friends', method='DELETE', allowed_params=['id'])
 
     #### Blog API
-    # https://github.com/500px/api-documentation/tree/master/endpoints/blog
+    # https://github.com/pixabay/api-documentation/tree/master/endpoints/blog
     blogs               = bind_api(path='/blogs')
     blogs_id            = bind_api(path='/blogs/{id}', allowed_params=['id'])
     blogs_comments      = bind_api(path='/blogs/{id}/comments', allowed_params=['id'])
@@ -62,11 +62,11 @@ class FiveHundredPXAPI(object):
     blogs_delete        = bind_api(path='/blogs/{id}', require_auth=True, allowed_params=['id'], method='DELETE')
     
     #### Comment API
-    # https://github.com/500px/api-documentation/tree/master/endpoints/comments
+    # https://github.com/pixabay/api-documentation/tree/master/endpoints/comments
     comments_post = bind_api(path='/comments/{id}/comments', require_auth=True, allowed_params=['id'], method='POST')
 
     #### Collection API
-    # https://github.com/500px/api-documentation/tree/master/endpoints/collections
+    # https://github.com/pixabay/api-documentation/tree/master/endpoints/collections
     collections        = bind_api(path='/collections', require_auth=True)
     collections_id     = bind_api(path='/collections/{id}', require_auth=True, allowed_params=['id'])
     collections_post   = bind_api(path='/collections', require_auth=True, method='POST', as_query=True)
@@ -74,7 +74,7 @@ class FiveHundredPXAPI(object):
     collections_delete = bind_api(path='/collections/{id}', require_auth=True, method='DELETE', allowed_params=['id'], as_query=True)
 
     #### Galleries API
-    # https://github.com/500px/api-documentation/blob/master/endpoints/galleries
+    # https://github.com/pixabay/api-documentation/blob/master/endpoints/galleries
     galleries    = bind_api(path='/users/{user_id}/galleries', allowed_params=['user_id'])
     galleries_id = bind_api(path='/users/{user_id}/galleries/{id}', allowed_params=['user_id', 'id'])
     galleries_id_items = bind_api(path='/users/{user_id}/galleries/{id}/items', allowed_params=['user_id', 'id'])

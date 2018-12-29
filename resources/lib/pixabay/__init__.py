@@ -1,9 +1,9 @@
-from fivehundredpx.client import FiveHundredPXAPI
-from fivehundredpx.auth   import *
-from fivehundredpx.errors import *
+from pixabay.client import pixabayAPI
+from pixabay.auth   import *
+from pixabay.errors import *
 
 """
-500px API library 
+pixabay API library
 inspired by tweepy(https://github.com/tweepy/tweepy), python-instagram(https://github.com/Instagram/python-instagram)
 """
 __version__ = '0.1.0'
