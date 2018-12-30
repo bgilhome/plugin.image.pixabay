@@ -146,46 +146,37 @@ def features():
 
 def categories():
     """ Lists all available photo categories. """
-    categories = {
-        'Uncategorized': 0,
-        'Abstract': 10,
-        'Animals': 11,
-        'Black and White': 5,
-        'Celebrities': 1,
-        'City and Architecture': 9,
-        'Commercial': 15,
-        'Concert': 16,
-        'Family': 20,
-        'Fashion': 14,
-        'Film': 2,
-        'Fine Art': 24,
-        'Food': 23,
-        'Journalism': 3,
-        'Landscapes': 8,
-        'Macro': 12,
-        'Nature': 18,
-        'Nude': 4,
-        'People': 7,
-        'Performing Arts': 19,
-        'Sport': 17,
-        'Still Life': 6,
-        'Street': 21,
-        'Transportation': 26,
-        'Travel': 13,
-        'Underwater': 22,
-        'Urban Exploration': 27,
-        'Wedding': 25,
-    }
+    categories = [
+		"fashion",
+		"nature",
+		"backgrounds",
+		"science",
+		"education",
+		"people",
+		"feelings",
+		"religion",
+		"health",
+		"places",
+		"animals",
+		"industry",
+		"food",
+		"computer",
+		"sports",
+		"transportation",
+		"travel",
+		"buildings",
+		"business",
+		"music",
+    ]
 
     params = pixabayutils.xbmc.addon_params
     feature = params['feature']
-    user_id = params.get('user_id', None)
 
-    url = pixabayutils.xbmc.encode_child_url('feature', feature=feature, user_id=user_id)
+    url = pixabayutils.xbmc.encode_child_url('feature', feature=feature)
     pixabayutils.xbmc.add_dir('All', url)
 
     for category in sorted(categories):
-        url = pixabayutils.xbmc.encode_child_url('feature', feature=feature, category=category, user_id=user_id)
+        url = pixabayutils.xbmc.encode_child_url('feature', feature=feature, category=category)
         pixabayutils.xbmc.add_dir(category, url)
 
     pixabayutils.xbmc.end_of_directory()
