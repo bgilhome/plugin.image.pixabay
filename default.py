@@ -39,10 +39,6 @@ _ORIENTATION = orientations[_ORIENTATION]
 orders = ['popular', 'latest']
 _ORDER = orders[_ORDER]
 
-# Get min width/height based on orientation
-min_width = 0 if _ORIENTATION == vertical else _IMGSIZE
-min_height = 0 if _ORIENTATION == horizontal else _IMGSIZE
-
 class Image(object):
     """ Holds information about a single image """
     def __init__(self, photo_json):
@@ -144,17 +140,17 @@ def search():
         page = int(params.get('page', 1))
 
     try:
-        resp = API.photos_search(q=term, per_page=_RPP, orientation=_ORIENTATION, min_width=min_width, min_height=min_height, page=page, order=_ORDER)
+        resp = API.image_search(q=term, per_page=_RPP, orientation=_ORIENTATION, page=page, order=_ORDER, editors_choice=_EDITORS_CHOICE, safesearch=_SAFESEARCH)
     except Exception, e:
         xbmc.executebuiltin('Notification(%s, %s,,%s)' % (__addonname__, 'Error from API: '+str(e.status),__icon__))
         xbmc.log(__addonname__+' - Error from API: '+str(e), xbmc.LOGERROR)
         return
 
-    if (resp['total_items'] == 0):
+    if (resp['totalHits'] == 0):
         xbmc.executebuiltin('Notification(%s, %s,,%s)' % (__addonname__, "Your search returned no matches.",__icon__))
         return
     pixabayutils.xbmc.xbmcplugin.setContent(pixabayutils.xbmc.addon_handle, 'images')
-    for image in map(Image, resp['photos']):
+    for image in map(Image, resp['hits']):
         pixabayutils.xbmc.add_image(image)
 
     if not (_LIMITP == 'true' and (resp['current_page'] >= _MAXP)):
