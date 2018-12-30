@@ -14,18 +14,19 @@ sys.path.append(__resource__)
 
 import pixabayutils
 import pixabayutils.xbmc
-from pixabay.client import pixabayAPI
+import python_pixabay
 
 _CONSUMER_KEY = int(xbmcplugin.getSetting(pixabayutils.xbmc.addon_handle, 'key'))
 _RPP = int(xbmcplugin.getSetting(pixabayutils.xbmc.addon_handle, 'rpp'))
 _LIMITP = str(xbmcplugin.getSetting(pixabayutils.xbmc.addon_handle, 'limitpages'))
 _MAXP = int(xbmcplugin.getSetting(pixabayutils.xbmc.addon_handle, 'maxpages'))
+_ORIENTATION = int(xbmcplugin.getSetting(pixabayutils.xbmc.addon_handle, 'orientation'))
 _IMGSIZE = int(xbmcplugin.getSetting(pixabayutils.xbmc.addon_handle, 'imgsize'))
 _TMBSIZE = int(xbmcplugin.getSetting(pixabayutils.xbmc.addon_handle, 'tmbsize'))
 _USERNAME = str(xbmcplugin.getSetting(pixabayutils.xbmc.addon_handle, 'username'))
 _TMBFOLDERS = str(xbmcplugin.getSetting(pixabayutils.xbmc.addon_handle, 'tmbfolders'))
 
-API = pixabayAPI()
+API = python_pixabay.Pixabay(_CONSUMER_KEY)
 
 
 class Image(object):
@@ -52,32 +53,32 @@ class User(object):
         self.username = None
         self.fullname = None
         self.picture = None
-        self._lookup_user()
+#        self._lookup_user()
 
     def __repr__(self):
         return str(self.__dict__)
 
-    def _lookup_user(self):
-        try:
-            self.info = API.users_show(consumer_key=_CONSUMER_KEY, id=self._lookupid, username=self._lookupusername)
-            self.id = self.info['user']['id']
-            self.username = self.info['user']['username']
-            self.fullname = self.info['user']['fullname']
-            if _TMBFOLDERS == 'true':
-                self.picture = self.info['user']['userpic_url']
-        except Exception, e:
-            _lookupvar = None
-            if self._lookupusername:
-                _lookupvar = self._lookupusername
-            elif self._lookupid:
-                _lookupvar = self._lookupid
-
-            if e.status == 404:
-                xbmc.executebuiltin('Notification(%s, %s,,%s)' % (__addonname__, 'Could not find user '+str(_lookupvar),__icon__))
-                xbmc.log(__addonname__+' - '+'Could not find user (userid/username: '+str(self._lookupid)+'/'+str(self._lookupusername)+')' , xbmc.LOGERROR)
-            else:
-                xbmc.executebuiltin('Notification(%s, %s,,%s)' % (__addonname__, 'Error from API: '+str(e.status),__icon__))
-                xbmc.log(__addonname__+' - Error from API: '+str(e), xbmc.LOGERROR)
+#    def _lookup_user(self):
+#        try:
+#            self.info = API.users_show(consumer_key=_CONSUMER_KEY, id=self._lookupid, username=self._lookupusername)
+#            self.id = self.info['user']['id']
+#            self.username = self.info['user']['username']
+#            self.fullname = self.info['user']['fullname']
+#            if _TMBFOLDERS == 'true':
+#                self.picture = self.info['user']['userpic_url']
+#        except Exception, e:
+#            _lookupvar = None
+#            if self._lookupusername:
+#                _lookupvar = self._lookupusername
+#            elif self._lookupid:
+#                _lookupvar = self._lookupid
+#
+#            if e.status == 404:
+#                xbmc.executebuiltin('Notification(%s, %s,,%s)' % (__addonname__, 'Could not find user '+str(_lookupvar),__icon__))
+#                xbmc.log(__addonname__+' - '+'Could not find user (userid/username: '+str(self._lookupid)+'/'+str(self._lookupusername)+')' , xbmc.LOGERROR)
+#            else:
+#                xbmc.executebuiltin('Notification(%s, %s,,%s)' % (__addonname__, 'Error from API: '+str(e.status),__icon__))
+#                xbmc.log(__addonname__+' - Error from API: '+str(e), xbmc.LOGERROR)
 
 
 
