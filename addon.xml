@@ -26,9 +26,4 @@
     <website>https://github.com/bgilhome/plugin.image.pixabay</website>
     <source>https://github.com/bgilhome/plugin.image.pixabay</source>
   </extension>
-  <extension point="xbmc.addon.repository" name="Bgilhome Repo">
-    <info compressed="false">https://raw.githubusercontent.com/bgilhome/kodi-repo/master/addons.xml</info>
-    <checksum>https://raw.githubusercontent.com/bgilhome/kodi-repo/master/addons.xml.md5</checksum>
-    <datadir zip="true">https://github.com/bgilhome/kodi-repo/archive/master.zip</datadir>
-  </extension>
 </addon>
