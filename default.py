@@ -21,6 +21,7 @@ _RPP = int(xbmcplugin.getSetting(pixabayutils.xbmc.addon_handle, 'rpp'))
 _LIMITP = str(xbmcplugin.getSetting(pixabayutils.xbmc.addon_handle, 'limitpages'))
 _MAXP = int(xbmcplugin.getSetting(pixabayutils.xbmc.addon_handle, 'maxpages'))
 _ORIENTATION = int(xbmcplugin.getSetting(pixabayutils.xbmc.addon_handle, 'orientation'))
+_ORDER = int(xbmcplugin.getSetting(pixabayutils.xbmc.addon_handle, 'order'))
 _IMGSIZE = int(xbmcplugin.getSetting(pixabayutils.xbmc.addon_handle, 'imgsize'))
 _TMBSIZE = int(xbmcplugin.getSetting(pixabayutils.xbmc.addon_handle, 'tmbsize'))
 _USERNAME = str(xbmcplugin.getSetting(pixabayutils.xbmc.addon_handle, 'username'))
@@ -28,6 +29,13 @@ _TMBFOLDERS = str(xbmcplugin.getSetting(pixabayutils.xbmc.addon_handle, 'tmbfold
 
 API = python_pixabay.Pixabay(_CONSUMER_KEY)
 
+# Get the string key for orientation from the index
+orientations = ['all', 'horizontal', 'vertical']
+_ORIENTATION = orientations[_ORIENTATION]
+
+# Get the string key for order from the index
+orders = ['popular', 'latest']
+_ORDER = orders[_ORDER]
 
 class Image(object):
     """ Holds information about a single image """

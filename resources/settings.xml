@@ -7,6 +7,7 @@
     <setting id="maxpages" type="labelenum" label="30010" enable="eq(-1,true)" subsetting="true" values="5|10|15|20|25" default="10"/>
     <setting id="orientation" type="enum" label="30023" lvalues="30024|30025|30026" default="30024"/>
     <setting id="imgsize" type="labelenum" label="30011" values="180|340|640|960|1280" default="1280"/>
+    <setting id="order" type="enum" label="30027" lvalues="30028|30029" default="30028"/>
     <setting id="tmbsize" type="labelenum" label="30012" values="180|340|640" default="340"/>
     <setting id="tmbfolders" type="bool" label="30013" default="false"/>
   </category>

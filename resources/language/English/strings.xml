@@ -20,5 +20,8 @@
   <string id="30023">Image orientation</string>
   <string id="30024">All</string>
   <string id="30025">Horizontal</string>
-  <string id="30026">Vertical/string>
+  <string id="30026">Vertical</string>
+  <string id="30027">Sort by</string>
+  <string id="30028">Popular</string>
+  <string id="30029">Latest</string>
 </strings>
