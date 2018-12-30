@@ -37,6 +37,10 @@ _ORIENTATION = orientations[_ORIENTATION]
 orders = ['popular', 'latest']
 _ORDER = orders[_ORDER]
 
+# Get min width/height based on orientation
+min_width = 0 if _ORIENTATION == vertical else _IMGSIZE
+min_height = 0 if _ORIENTATION == horizontal else _IMGSIZE
+
 class Image(object):
     """ Holds information about a single image """
     def __init__(self, photo_json):
@@ -138,7 +142,7 @@ def search():
         page = int(params.get('page', 1))
 
     try:
-        resp = API.photos_search(term=term, rpp=_RPP, consumer_key=_CONSUMER_KEY, image_size=[_TMBSIZE, _IMGSIZE], page=page)
+        resp = API.photos_search(q=term, per_page=_RPP, orientation=_ORIENTATION, min_width=min_width, min_height=min_height, page=page, order=_ORDER)
     except Exception, e:
         xbmc.executebuiltin('Notification(%s, %s,,%s)' % (__addonname__, 'Error from API: '+str(e.status),__icon__))
         xbmc.log(__addonname__+' - Error from API: '+str(e), xbmc.LOGERROR)
