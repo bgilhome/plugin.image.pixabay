@@ -131,25 +131,12 @@ def features():
     features = (
         "editors",
         "popular",
-        "highest_rated",
-        "upcoming",
-        "fresh_today",
-        "fresh_yesterday",
-        "fresh_week"
+        "latest",
     )
 
     for feature in features:
         url = pixabayutils.xbmc.encode_child_url('categories', feature=feature)
         pixabayutils.xbmc.add_dir(feature, url)
-
-    if _USERNAME != "":
-        user = User(username=_USERNAME)
-        if user.id:
-            url = pixabayutils.xbmc.encode_child_url('user_features', user_id=user.id)
-            pixabayutils.xbmc.add_dir(user.fullname, url, user.picture)
-
-            url = pixabayutils.xbmc.encode_child_url('friends', user_id=user.id)
-            pixabayutils.xbmc.add_dir(user.fullname+'\'s friends', url)
 
     url = pixabayutils.xbmc.encode_child_url('search')
     pixabayutils.xbmc.add_dir('Search', url)
@@ -204,130 +191,11 @@ def categories():
     pixabayutils.xbmc.end_of_directory()
 
 
-def user_features():
-    """ Lists features for a single user identified by user_id """
-    params = pixabayutils.xbmc.addon_params
-    user_id = params.get('user_id', None)
-
-    if user_id:
-        user = User(user_id)
-
-        url = pixabayutils.xbmc.encode_child_url('feature', feature='user', user_id=user.id)
-        pixabayutils.xbmc.add_dir(user.fullname+'\'s photos', url, user.picture)
-
-        url = pixabayutils.xbmc.encode_child_url('list_galleries', user_id=user.id)
-        pixabayutils.xbmc.add_dir(user.fullname+'\'s galleries', url, user.picture)
-
-        url = pixabayutils.xbmc.encode_child_url('categories', feature='user_friends', user_id=user.id)
-        pixabayutils.xbmc.add_dir(user.fullname+'\'s friends\' photos', url, user.picture)
-
-    pixabayutils.xbmc.end_of_directory()
-
-
-def list_galleries():
-    """ List public galleries for a user identified by user_id """
-    params = pixabayutils.xbmc.addon_params
-    page = int(params.get('page', 1))
-    user_id = params.get('user_id', None)
-
-    try:
-        resp = API.galleries(consumer_key=_CONSUMER_KEY, user_id=user_id, sort='position',sort_direction='asc', include_cover=1, cover_size=_TMBSIZE, page=page, rpp=_RPP)
-    except Exception, e:
-        xbmc.executebuiltin('Notification(%s, %s,,%s)' % (__addonname__, 'Error from API: '+str(e.status),__icon__))
-        xbmc.log(__addonname__+' - Error from API: '+str(e), xbmc.LOGERROR)
-        return
-
-    if (resp['total_items'] == 0):
-        xbmc.executebuiltin('Notification(%s, %s,,%s)' % (__addonname__, "No galleries found for "+user_id, __icon__))
-        return
-
-    for gallery in resp['galleries']:
-        url = pixabayutils.xbmc.encode_child_url('gallery', gallery_id=gallery['id'], user_id=gallery['user_id'])
-        cover_photo = None
-        if (_TMBFOLDERS == 'true' and gallery['cover_photo']):
-            cover_photo = gallery['cover_photo'][0]['url']
-        pixabayutils.xbmc.add_dir(gallery['name'], url, cover_photo)
-
-    if not (_LIMITP == 'true' and (resp['current_page'] >= _MAXP)):
-       if resp['current_page'] < resp['total_pages']:
-           next_page = page + 1
-           url = pixabayutils.xbmc.encode_child_url('list_galleries', user_id=user_id, page=next_page)
-           pixabayutils.xbmc.add_dir('Next page', url)
-
-    pixabayutils.xbmc.end_of_directory()
-
-
-def gallery():
-    """ Lists photos in a gallery identified by user_id and gallery_id """
-    params = pixabayutils.xbmc.addon_params
-    user_id = params['user_id']
-    gallery_id = params['gallery_id']
-    page = int(params.get('page', 1))
-
-    try:
-        resp = API.galleries_id_items(id=gallery_id, user_id=user_id, sort='position', sort_direction='asc', rpp=_RPP, consumer_key=_CONSUMER_KEY, image_size=[_TMBSIZE, _IMGSIZE], page=page)
-    except Exception, e:
-        xbmc.executebuiltin('Notification(%s, %s,,%s)' % (__addonname__, 'Error from API: '+str(e.status),__icon__))
-        xbmc.log(__addonname__+' - Error from API: '+str(e), xbmc.LOGERROR)
-        return
-    pixabayutils.xbmc.xbmcplugin.setContent(pixabayutils.xbmc.addon_handle, 'images')
-    for image in map(Image, resp['photos']):
-        pixabayutils.xbmc.add_image(image)
-
-    if not (_LIMITP == 'true' and (resp['current_page'] >= _MAXP)):
-        if resp['current_page'] < resp['total_pages']:
-            next_page = page + 1
-            url = pixabayutils.xbmc.encode_child_url('gallery', gallery_id=gallery_id, user_id=user_id, page=next_page)
-            pixabayutils.xbmc.add_dir('Next page', url)
-
-    pixabayutils.xbmc.end_of_directory()
-
-
-def friends():
-    """ Lists friends of a user identified by user_id """
-    params = pixabayutils.xbmc.addon_params
-    page = int(params.get('page', 1))
-    user_id = params.get('user_id', None)
-
-    try:
-        resp = API.users_friends(consumer_key=_CONSUMER_KEY, id=user_id, page=page, rpp=_RPP)
-    except Exception, e:
-        xbmc.executebuiltin('Notification(%s, %s,,%s)' % (__addonname__, 'Error from API: '+str(e.status),__icon__))
-        xbmc.log(__addonname__+' - Error from API: '+str(e), xbmc.LOGERROR)
-        return
-
-    if (resp['friends_count'] == 0):
-        xbmc.executebuiltin('Notification(%s, %s,,%s)' % (__addonname__, "No friends found for "+user_id, __icon__))
-        return
-
-    for friend in resp['friends']:
-        #xbmc.log(__addonname__+' - friend info '+str(friend), 0)
-        url = pixabayutils.xbmc.encode_child_url('user_features', user_id=friend['id'])
-        userpicture = None
-        if _TMBFOLDERS == 'true':
-            userpicture = friend['userpic_url']
-        pixabayutils.xbmc.add_dir(friend['fullname'], url, userpicture)
-
-    if not (_LIMITP == 'true' and (resp['page'] >= _MAXP)):
-       if resp['page'] < resp['friends_pages']:
-           next_page = page + 1
-           url = pixabayutils.xbmc.encode_child_url('friends', user_id=user_id, page=next_page)
-           pixabayutils.xbmc.add_dir('Next page', url)
-
-    pixabayutils.xbmc.end_of_directory()
-
-
-
-
 try:
     modes = {
         'feature': feature,
         'categories': categories,
         'search': search,
-        'list_galleries': list_galleries,
-        'gallery': gallery,
-        'user_features': user_features,
-        'friends': friends,
     }
 
     params = pixabayutils.xbmc.addon_params
