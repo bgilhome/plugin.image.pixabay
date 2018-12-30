@@ -16,7 +16,7 @@ import pixabayutils
 import pixabayutils.xbmc
 from pixabay.client import pixabayAPI
 
-_CONSUMER_KEY = 'LvUFQHMQgSlaWe3aRQot6Ct5ZC2pdTMyTLS0GMfF'
+_CONSUMER_KEY = int(xbmcplugin.getSetting(pixabayutils.xbmc.addon_handle, 'key'))
 _RPP = int(xbmcplugin.getSetting(pixabayutils.xbmc.addon_handle, 'rpp'))
 _LIMITP = str(xbmcplugin.getSetting(pixabayutils.xbmc.addon_handle, 'limitpages'))
 _MAXP = int(xbmcplugin.getSetting(pixabayutils.xbmc.addon_handle, 'maxpages'))

@@ -2,8 +2,8 @@
 
 Kodi addon to view photos from http://pixabay.com.
 
-This addon was forked from the pixabay plugin by Patrick L Archibald (https://github.com/pla1/plugin.image.pixabay)
-which was made inactive after the public pixabay API was terminated.
+This addon was forked from the 500px plugin by Patrick L Archibald (https://github.com/pla1/plugin.image.500px)
+which was made inactive after the public 500px API was terminated.
 
 The source for this addon can be viewed at https://github.com/bgilhome/plugin.image.pixabay.
 
