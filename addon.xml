@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.image.pixabay" name="Pixabay" version="0.1"
-       provider-name="Bryce Gilhome [info@example.com]">
+<addon id="plugin.image.pixabay" name="Pixabay" version="0.1.0"
+       provider-name="Bryce Gilhome">
   <requires>
     <import addon="script.module.simplejson" version="2.0.10"/>
     <import addon="xbmc.python" version="2.14.0"/>
@@ -25,6 +25,6 @@
     <forum>https://github.com/bgilhome/plugin.image.pixabay/issues</forum>
     <website>https://github.com/bgilhome/plugin.image.pixabay</website>
     <source>https://github.com/bgilhome/plugin.image.pixabay</source>
-    <email>info@example.com</email>
+    <email></email>
   </extension>
 </addon>
