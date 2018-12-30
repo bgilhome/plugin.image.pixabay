@@ -42,54 +42,15 @@ _ORDER = orders[_ORDER]
 class Image(object):
     """ Holds information about a single image """
     def __init__(self, photo_json):
-        self.name = photo_json['name']
-        self.thumb_url = photo_json['images'][0]['url']
-        self.url = photo_json['images'][1]['url']
-        self.username = photo_json['user']['username']
-        self.userfullname = photo_json['user']['fullname']
+    	# No image title in Pixabay, use tags
+        self.name = photo_json['tags']
+        self.thumb_url = photo_json['previewURL'] if _TMBSIZE == 150 else photo_json['webformatURL'].replace('_640', '_' + _TMBSIZE)
+        self.url = photo_json['largeImageURL'] if _IMGSIZE == 1280 else photo_json['webformatURL'].replace('_640', '_' + _IMGSIZE)
+        self.username = photo_json['user']
+        self.user_url = photo_json['userImageURL']
 
     def __repr__(self):
         return str(self.__dict__)
-
-
-class User(object):
-    """ Holds information about a user object. Looks up info via api """
-    def __init__(self, userid=None, username=None):
-        super(User, self).__init__()
-        self._lookupid = userid
-        self._lookupusername = username
-        self.info = None
-        self.id = None
-        self.username = None
-        self.fullname = None
-        self.picture = None
-#        self._lookup_user()
-
-    def __repr__(self):
-        return str(self.__dict__)
-
-#    def _lookup_user(self):
-#        try:
-#            self.info = API.users_show(consumer_key=_CONSUMER_KEY, id=self._lookupid, username=self._lookupusername)
-#            self.id = self.info['user']['id']
-#            self.username = self.info['user']['username']
-#            self.fullname = self.info['user']['fullname']
-#            if _TMBFOLDERS == 'true':
-#                self.picture = self.info['user']['userpic_url']
-#        except Exception, e:
-#            _lookupvar = None
-#            if self._lookupusername:
-#                _lookupvar = self._lookupusername
-#            elif self._lookupid:
-#                _lookupvar = self._lookupid
-#
-#            if e.status == 404:
-#                xbmc.executebuiltin('Notification(%s, %s,,%s)' % (__addonname__, 'Could not find user '+str(_lookupvar),__icon__))
-#                xbmc.log(__addonname__+' - '+'Could not find user (userid/username: '+str(self._lookupid)+'/'+str(self._lookupusername)+')' , xbmc.LOGERROR)
-#            else:
-#                xbmc.executebuiltin('Notification(%s, %s,,%s)' % (__addonname__, 'Error from API: '+str(e.status),__icon__))
-#                xbmc.log(__addonname__+' - Error from API: '+str(e), xbmc.LOGERROR)
-
 
 
 
