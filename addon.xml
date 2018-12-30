@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.image.pixabay" name="Pixabay" version="0.1.0"
+<addon id="plugin.image.pixabay" name="Pixabay" version="0.0.1"
        provider-name="Bryce Gilhome">
   <requires>
     <import addon="script.module.simplejson" version="2.0.10"/>
@@ -25,5 +25,10 @@
     <forum>https://github.com/bgilhome/plugin.image.pixabay/issues</forum>
     <website>https://github.com/bgilhome/plugin.image.pixabay</website>
     <source>https://github.com/bgilhome/plugin.image.pixabay</source>
+  </extension>
+  <extension point="xbmc.addon.repository" name="Bgilhome Repo">
+    <info compressed="false">https://raw.githubusercontent.com/bgilhome/kodi-repo/master/addons.xml</info>
+    <checksum>https://raw.githubusercontent.com/bgilhome/kodi-repo/master/addons.xml.md5</checksum>
+    <datadir zip="true">https://github.com/bgilhome/kodi-repo/archive/master.zip</datadir>
   </extension>
 </addon>
