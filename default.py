@@ -91,6 +91,7 @@ def search():
 
     params = pixabayutils.xbmc.addon_params
 
+	# Get term or show modal if empty
     if 'term' not in params:
         term = getTerm()
         if term == None:
@@ -100,13 +101,23 @@ def search():
         term = params['term']
         page = int(params.get('page', 1))
 
+	# Get feature/category if present
+	feature = params.get('feature', '')
+	category = params.get('category', '')
+
+	# Set order & editors choice params
+	order = feature if feature in ["popular", "latest"] else _ORDER
+	editors_choice = true if feature == "editors" else _EDITORS_CHOICE
+
+	# Run the query
     try:
-        resp = API.image_search(q=term, per_page=_RPP, orientation=_ORIENTATION, page=page, order=_ORDER, editors_choice=_EDITORS_CHOICE, safesearch=_SAFESEARCH)
+        resp = API.image_search(q=q, category=category, per_page=per_page, orientation=orientation, page=page, order=order, editors_choice=editors_choice, safesearch=safesearch)
     except Exception, e:
         xbmc.executebuiltin('Notification(%s, %s,,%s)' % (__addonname__, 'Error from API: '+str(e.status),__icon__))
         xbmc.log(__addonname__+' - Error from API: '+str(e), xbmc.LOGERROR)
         return
 
+	# Handle results
     if (resp['totalHits'] == 0):
         xbmc.executebuiltin('Notification(%s, %s,,%s)' % (__addonname__, "Your search returned no matches.",__icon__))
         return
@@ -114,6 +125,7 @@ def search():
     for image in map(Image, resp['hits']):
         pixabayutils.xbmc.add_image(image)
 
+	# Pager
     if not (_LIMITP == 'true' and (resp['current_page'] >= _MAXP)):
         if resp['current_page'] < resp['total_pages']:
             next_page = page + 1
