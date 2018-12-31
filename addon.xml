@@ -3,6 +3,7 @@
        provider-name="Bryce Gilhome">
   <requires>
     <import addon="script.module.simplejson" version="2.0.10"/>
+    <import addon="script.module.requests" version="2.12.4"/>
     <import addon="xbmc.python" version="2.14.0"/>
   </requires>
   <extension point="xbmc.python.pluginsource" library="default.py">
