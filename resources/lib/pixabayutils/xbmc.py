@@ -50,7 +50,7 @@ def add_image(image):
     )
 
     if not 'ctxsearch' in addon_params:
-        label = "More from %s" % image.userfullname # i18n
+        label = "More from user %s" % image.username # i18n
         url = encode_child_url('search', term=image.username, ctxsearch=True)
         action = "XBMC.Container.Update(%s)" % url
         item.addContextMenuItems([(label, action,)])

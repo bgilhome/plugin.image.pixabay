@@ -45,7 +45,6 @@ class Image(object):
         self.thumb_url = photo_json['previewURL'] if _TMBSIZE == 150 else photo_json['webformatURL'].replace('_640', '_' + _TMBSIZE)
         self.url = photo_json['largeImageURL'] if _IMGSIZE == 1280 else photo_json['webformatURL'].replace('_640', '_' + _IMGSIZE)
         self.username = photo_json['user']
-        self.user_url = photo_json['userImageURL']
 
     def __repr__(self):
         return str(self.__dict__)
