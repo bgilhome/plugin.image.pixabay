@@ -52,27 +52,15 @@ class Image(object):
 
 
 def feature():
-    """ Lists photos for the chosen feature, category and user_id """
-    params = pixabayutils.xbmc.addon_params
-    feature = params['feature']
-    category = params.get('category', None)
     page = int(params.get('page', 1))
-    user_id = params.get('user_id', None)
 
-    try:
-        resp = API.photos(feature=feature, only=category, user_id=user_id, rpp=_RPP, consumer_key=_CONSUMER_KEY, image_size=[_TMBSIZE, _IMGSIZE], page=page)
-    except Exception, e:
-        xbmc.executebuiltin('Notification(%s, %s,,%s)' % (__addonname__, 'Error from API: '+str(e.status),__icon__))
-        xbmc.log(__addonname__+' - Error from API: '+str(e), xbmc.LOGERROR)
-        return
-    pixabayutils.xbmc.xbmcplugin.setContent(pixabayutils.xbmc.addon_handle, 'images')
-    for image in map(Image, resp['photos']):
-        pixabayutils.xbmc.add_image(image)
+	do_search(page)
 
-    if not (_LIMITP == 'true' and (resp['current_page'] >= _MAXP)):
-        if resp['current_page'] < resp['total_pages']:
+	# Pager
+    if not (_LIMITP == 'true' and (page >= _MAXP)):
+        if page * _RPP < resp['totalHits']:
             next_page = page + 1
-            url = pixabayutils.xbmc.encode_child_url('feature', feature=feature, category=category, user_id=user_id, page=next_page)
+            url = pixabayutils.xbmc.encode_child_url('feature', feature=feature, category=category, page=next_page)
             pixabayutils.xbmc.add_dir('Next page', url)
 
     pixabayutils.xbmc.end_of_directory()
@@ -98,6 +86,23 @@ def search():
         term = params['term']
         page = int(params.get('page', 1))
 
+	do_search(page)
+
+	# Pager
+	if not (_LIMITP == 'true' and (page >= _MAXP)):
+		if page * _RPP < resp['totalHits']:
+			next_page = page + 1
+			if 'ctxsearch' in params:
+				url = pixabayutils.xbmc.encode_child_url('search', term=term, page=next_page, ctxsearch=True)
+			else:
+				url = pixabayutils.xbmc.encode_child_url('search', term=term, page=next_page)
+			pixabayutils.xbmc.add_dir('Next page', url)
+
+	pixabayutils.xbmc.end_of_directory()
+
+def do_search(page=None):
+	page = page or 1
+
 	# Get feature/category if present
 	feature = params.get('feature', '')
 	category = params.get('category', '')
@@ -108,7 +113,7 @@ def search():
 
 	# Run the query
     try:
-        resp = API.image_search(q=q, category=category, per_page=per_page, orientation=orientation, page=page, order=order, editors_choice=editors_choice, safesearch=safesearch)
+        resp = API.image_search(q=term, category=category, per_page=_RPP, orientation=_ORIENTATION, page=page, order=order, editors_choice=editors_choice, safesearch=_SAFESEARCH)
     except Exception, e:
         xbmc.executebuiltin('Notification(%s, %s,,%s)' % (__addonname__, 'Error from API: '+str(e.status),__icon__))
         xbmc.log(__addonname__+' - Error from API: '+str(e), xbmc.LOGERROR)
@@ -121,18 +126,6 @@ def search():
     pixabayutils.xbmc.xbmcplugin.setContent(pixabayutils.xbmc.addon_handle, 'images')
     for image in map(Image, resp['hits']):
         pixabayutils.xbmc.add_image(image)
-
-	# Pager
-    if not (_LIMITP == 'true' and (resp['current_page'] >= _MAXP)):
-        if resp['current_page'] < resp['total_pages']:
-            next_page = page + 1
-            if 'ctxsearch' in params:
-                url = pixabayutils.xbmc.encode_child_url('search', term=term, page=next_page, ctxsearch=True)
-            else:
-                url = pixabayutils.xbmc.encode_child_url('search', term=term, page=next_page)
-            pixabayutils.xbmc.add_dir('Next page', url)
-
-    pixabayutils.xbmc.end_of_directory()
 
 
 def features():
