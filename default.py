@@ -26,8 +26,6 @@ _SAFESEARCH = str(xbmcplugin.getSetting(pixabayutils.xbmc.addon_handle, 'safesea
 _ORDER = str(xbmcplugin.getSetting(pixabayutils.xbmc.addon_handle, 'order'))
 _IMGSIZE = int(xbmcplugin.getSetting(pixabayutils.xbmc.addon_handle, 'imgsize'))
 _TMBSIZE = int(xbmcplugin.getSetting(pixabayutils.xbmc.addon_handle, 'tmbsize'))
-_USERNAME = str(xbmcplugin.getSetting(pixabayutils.xbmc.addon_handle, 'username'))
-_TMBFOLDERS = str(xbmcplugin.getSetting(pixabayutils.xbmc.addon_handle, 'tmbfolders'))
 
 API = python_pixabay.Pixabay(_CONSUMER_KEY)
 

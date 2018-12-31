@@ -11,9 +11,5 @@
     <setting id="safesearch" type="bool" label="30031" default="true"/>
     <setting id="order" type="enum" label="30027" lvalues="30028|30029" default="30028"/>
     <setting id="tmbsize" type="labelenum" label="30012" values="150|180|340|640" default="150"/>
-    <setting id="tmbfolders" type="bool" label="30013" default="false"/>
-  </category>
-  <category label="30020">
-  	<setting id="username" type="text" label="30021" default=""/>
   </category>
 </settings>
