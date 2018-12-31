@@ -16,14 +16,14 @@ import pixabayutils
 import pixabayutils.xbmc
 import python_pixabay
 
-_CONSUMER_KEY = int(xbmcplugin.getSetting(pixabayutils.xbmc.addon_handle, 'key'))
+_CONSUMER_KEY = str(xbmcplugin.getSetting(pixabayutils.xbmc.addon_handle, 'key'))
 _RPP = int(xbmcplugin.getSetting(pixabayutils.xbmc.addon_handle, 'rpp'))
 _LIMITP = str(xbmcplugin.getSetting(pixabayutils.xbmc.addon_handle, 'limitpages'))
 _MAXP = int(xbmcplugin.getSetting(pixabayutils.xbmc.addon_handle, 'maxpages'))
-_ORIENTATION = int(xbmcplugin.getSetting(pixabayutils.xbmc.addon_handle, 'orientation'))
-_EDITORS_CHOICE = int(xbmcplugin.getSetting(pixabayutils.xbmc.addon_handle, 'editorschoice'))
-_SAFESEARCH = int(xbmcplugin.getSetting(pixabayutils.xbmc.addon_handle, 'safesearch'))
-_ORDER = int(xbmcplugin.getSetting(pixabayutils.xbmc.addon_handle, 'order'))
+_ORIENTATION = str(xbmcplugin.getSetting(pixabayutils.xbmc.addon_handle, 'orientation'))
+_EDITORS_CHOICE = str(xbmcplugin.getSetting(pixabayutils.xbmc.addon_handle, 'editorschoice'))
+_SAFESEARCH = str(xbmcplugin.getSetting(pixabayutils.xbmc.addon_handle, 'safesearch'))
+_ORDER = str(xbmcplugin.getSetting(pixabayutils.xbmc.addon_handle, 'order'))
 _IMGSIZE = int(xbmcplugin.getSetting(pixabayutils.xbmc.addon_handle, 'imgsize'))
 _TMBSIZE = int(xbmcplugin.getSetting(pixabayutils.xbmc.addon_handle, 'tmbsize'))
 _USERNAME = str(xbmcplugin.getSetting(pixabayutils.xbmc.addon_handle, 'username'))
