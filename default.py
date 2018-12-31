@@ -38,117 +38,129 @@ orders = ['popular', 'latest']
 _ORDER = orders[_ORDER]
 
 class Image(object):
-    """ Holds information about a single image """
-    def __init__(self, photo_json):
-    	# No image title in Pixabay, use tags
-        self.name = photo_json['tags']
-        self.thumb_url = photo_json['previewURL'] if _TMBSIZE == 150 else photo_json['webformatURL'].replace('_640', '_' + _TMBSIZE)
-        self.url = photo_json['largeImageURL'] if _IMGSIZE == 1280 else photo_json['webformatURL'].replace('_640', '_' + _IMGSIZE)
-        self.username = photo_json['user']
+	""" Holds information about a single image """
+	def __init__(self, photo_json):
+		# No image title in Pixabay, use tags
+		self.name = str(photo_json['id']) + ": " + photo_json['tags']
+		self.thumb_url = photo_json['previewURL'] if _TMBSIZE == 150 else photo_json['webformatURL'].replace('_640', '_' + _TMBSIZE)
+		self.url = photo_json['largeImageURL'] if _IMGSIZE == 1280 else photo_json['webformatURL'].replace('_640', '_' + _IMGSIZE)
+		self.username = photo_json['user']
 
-    def __repr__(self):
-        return str(self.__dict__)
+	def __repr__(self):
+		return str(self.__dict__)
 
 
 
 def feature():
-    page = int(params.get('page', 1))
-
-	do_search(page)
-
-	# Pager
-    if not (_LIMITP == 'true' and (page >= _MAXP)):
-        if page * _RPP < resp['totalHits']:
-            next_page = page + 1
-            url = pixabayutils.xbmc.encode_child_url('feature', feature=feature, category=category, page=next_page)
-            pixabayutils.xbmc.add_dir('Next page', url)
-
-    pixabayutils.xbmc.end_of_directory()
-
-
-def search():
-    """ Shows a search box and lists resulting photos """
-    def getTerm():
-        kb = xbmc.Keyboard(heading='Search pixabay')
-        kb.doModal()
-        text = kb.getText()
-        return text if kb.isConfirmed() and text else None
-
-    params = pixabayutils.xbmc.addon_params
-
-	# Get term or show modal if empty
-    if 'term' not in params:
-        term = getTerm()
-        if term == None:
-            return
-        page = 1
-    else:
-        term = params['term']
-        page = int(params.get('page', 1))
-
-	do_search(page)
-
-	# Pager
-	if not (_LIMITP == 'true' and (page >= _MAXP)):
-		if page * _RPP < resp['totalHits']:
-			next_page = page + 1
-			if 'ctxsearch' in params:
-				url = pixabayutils.xbmc.encode_child_url('search', term=term, page=next_page, ctxsearch=True)
-			else:
-				url = pixabayutils.xbmc.encode_child_url('search', term=term, page=next_page)
-			pixabayutils.xbmc.add_dir('Next page', url)
-
-	pixabayutils.xbmc.end_of_directory()
-
-def do_search(page=None):
-	page = page or 1
-
-	# Get feature/category if present
-	feature = params.get('feature', '')
-	category = params.get('category', '')
+	""" Lists photos for the chosen feature and category """
+	params = pixabayutils.xbmc.addon_params
+	feature = params['feature']
+	category = params.get('category', None)
+	page = int(params.get('page', 1))
 
 	# Set order & editors choice params
 	order = feature if feature in ["popular", "latest"] else _ORDER
-	editors_choice = true if feature == "editors" else _EDITORS_CHOICE
+	editors_choice = "true" if feature == "editors" else _EDITORS_CHOICE
+
+	resp = do_search(category=category, order=order, editors_choice=editors_choice, page=page)
+	if resp:
+		pixabayutils.xbmc.xbmcplugin.setContent(pixabayutils.xbmc.addon_handle, 'images')
+		for image in map(Image, resp['hits']):
+			pixabayutils.xbmc.add_image(image)
+
+		# Pager
+		if not (_LIMITP == 'true' and (page >= _MAXP)):
+			if page * _RPP < resp['totalHits']:
+				next_page = page + 1
+				url = pixabayutils.xbmc.encode_child_url('feature', feature=feature, category=category, page=next_page)
+				pixabayutils.xbmc.add_dir('Next page', url)
+
+	pixabayutils.xbmc.end_of_directory()
+
+
+def search():
+	""" Shows a search box and lists resulting photos """
+	def getTerm():
+		kb = xbmc.Keyboard(heading='Search pixabay')
+		kb.doModal()
+		text = kb.getText()
+		return text if kb.isConfirmed() and text else None
+
+	params = pixabayutils.xbmc.addon_params
+
+	# Get term or show modal if empty
+	if 'term' not in params:
+		term = getTerm()
+		if term == None:
+			return
+		page = 1
+	else:
+		term = params['term']
+		page = int(params.get('page', 1))
+
+	resp = do_search(term=term, page=page)
+	if resp:
+		pixabayutils.xbmc.xbmcplugin.setContent(pixabayutils.xbmc.addon_handle, 'images')
+		for image in map(Image, resp['hits']):
+			pixabayutils.xbmc.add_image(image)
+
+		# Pager
+		if not (_LIMITP == 'true' and (page >= _MAXP)):
+			if page * _RPP < resp['totalHits']:
+				next_page = page + 1
+				if 'ctxsearch' in params:
+					url = pixabayutils.xbmc.encode_child_url('search', term=term, page=next_page, ctxsearch=True)
+				else:
+					url = pixabayutils.xbmc.encode_child_url('search', term=term, page=next_page)
+				pixabayutils.xbmc.add_dir('Next page', url)
+
+	pixabayutils.xbmc.end_of_directory()
+
+def do_search(term=None, category=None, page=None, order=None, editors_choice=None, per_page=_RPP, orientation=_ORIENTATION, safesearch=_SAFESEARCH):
+	""" Runs a query via the API """
+	# Defaults
+	term = term or ''
+	category = category or ''
+	page = page or 1
+	order = order or _ORDER
+	editors_choice = editors_choice or _EDITORS_CHOICE
 
 	# Run the query
-    try:
-        resp = API.image_search(q=term, category=category, per_page=_RPP, orientation=_ORIENTATION, page=page, order=order, editors_choice=editors_choice, safesearch=_SAFESEARCH)
-    except Exception, e:
-        xbmc.executebuiltin('Notification(%s, %s,,%s)' % (__addonname__, 'Error from API: '+str(e.status),__icon__))
-        xbmc.log(__addonname__+' - Error from API: '+str(e), xbmc.LOGERROR)
-        return
+	try:
+		resp = API.image_search(q=term, category=category, per_page=_RPP, orientation=_ORIENTATION, page=page, order=order, editors_choice=editors_choice, safesearch=_SAFESEARCH)
+	except Exception, e:
+		xbmc.executebuiltin('Notification(%s, %s,,%s)' % (__addonname__, 'Error from API: '+str(e.status),__icon__))
+		xbmc.log(__addonname__+' - Error from API: '+str(e), xbmc.LOGERROR)
+		return
 
 	# Handle results
-    if (resp['totalHits'] == 0):
-        xbmc.executebuiltin('Notification(%s, %s,,%s)' % (__addonname__, "Your search returned no matches.",__icon__))
-        return
-    pixabayutils.xbmc.xbmcplugin.setContent(pixabayutils.xbmc.addon_handle, 'images')
-    for image in map(Image, resp['hits']):
-        pixabayutils.xbmc.add_image(image)
+	if (resp['totalHits'] == 0):
+		xbmc.executebuiltin('Notification(%s, %s,,%s)' % (__addonname__, "Your search returned no matches.",__icon__))
+		return
 
+	return resp
 
 def features():
-    """ Lists all available features. Main menu. """
-    features = (
-        "editors",
-        "popular",
-        "latest",
-    )
+	""" Lists all available features. Main menu. """
+	features = (
+		"editors",
+		"popular",
+		"latest",
+	)
 
-    for feature in features:
-        url = pixabayutils.xbmc.encode_child_url('categories', feature=feature)
-        pixabayutils.xbmc.add_dir(feature, url)
+	for feature in features:
+		url = pixabayutils.xbmc.encode_child_url('categories', feature=feature)
+		pixabayutils.xbmc.add_dir(feature, url)
 
-    url = pixabayutils.xbmc.encode_child_url('search')
-    pixabayutils.xbmc.add_dir('Search', url)
+	url = pixabayutils.xbmc.encode_child_url('search')
+	pixabayutils.xbmc.add_dir('Search', url)
 
-    pixabayutils.xbmc.end_of_directory()
+	pixabayutils.xbmc.end_of_directory()
 
 
 def categories():
-    """ Lists all available photo categories. """
-    categories = [
+	""" Lists all available photo categories. """
+	categories = [
 		"fashion",
 		"nature",
 		"backgrounds",
@@ -169,30 +181,30 @@ def categories():
 		"buildings",
 		"business",
 		"music",
-    ]
+	]
 
-    params = pixabayutils.xbmc.addon_params
-    feature = params['feature']
+	params = pixabayutils.xbmc.addon_params
+	feature = params['feature']
 
-    url = pixabayutils.xbmc.encode_child_url('feature', feature=feature)
-    pixabayutils.xbmc.add_dir('All', url)
+	url = pixabayutils.xbmc.encode_child_url('feature', feature=feature)
+	pixabayutils.xbmc.add_dir('All', url)
 
-    for category in sorted(categories):
-        url = pixabayutils.xbmc.encode_child_url('feature', feature=feature, category=category)
-        pixabayutils.xbmc.add_dir(category, url)
+	for category in sorted(categories):
+		url = pixabayutils.xbmc.encode_child_url('feature', feature=feature, category=category)
+		pixabayutils.xbmc.add_dir(category, url)
 
-    pixabayutils.xbmc.end_of_directory()
+	pixabayutils.xbmc.end_of_directory()
 
 
 try:
-    modes = {
-        'feature': feature,
-        'categories': categories,
-        'search': search,
-    }
+	modes = {
+		'feature': feature,
+		'categories': categories,
+		'search': search,
+	}
 
-    params = pixabayutils.xbmc.addon_params
-    mode_name = params['mode']
-    modes[mode_name]()
+	params = pixabayutils.xbmc.addon_params
+	mode_name = params['mode']
+	modes[mode_name]()
 except KeyError:
-    features()
+	features()
