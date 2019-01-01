@@ -76,7 +76,8 @@ def feature():
 				pixabayutils.xbmc.add_dir('Next page', url)
 
 	pixabayutils.xbmc.end_of_directory()
-
+	if resp:
+		xbmc.executebuiltin("Action(Play)")
 
 def search():
 	""" Shows a search box and lists resulting photos """
@@ -115,6 +116,8 @@ def search():
 				pixabayutils.xbmc.add_dir('Next page', url)
 
 	pixabayutils.xbmc.end_of_directory()
+	if resp:
+		xbmc.executebuiltin("Action(Play)")
 
 def do_search(term=None, category=None, page=None, order=None, editors_choice=None, per_page=_RPP, orientation=_ORIENTATION, safesearch=_SAFESEARCH):
 	""" Runs a query via the API """
